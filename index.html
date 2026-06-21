@@ -36,7 +36,6 @@
             padding: 25px; 
             border-radius: 12px; 
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
         }
 
         h1 { 
@@ -46,13 +45,12 @@
             margin-bottom: 20px; 
         }
         
-        /* Progress Bar Tracker */
+        /* Progress Tracker Bar */
         .progress-container { 
             display: flex; 
             justify-content: space-between; 
             position: relative; 
             margin-bottom: 30px; 
-            max-width: 100%;
         }
         .progress-container::before { 
             content: ''; 
@@ -74,7 +72,7 @@
             height: 4px; 
             width: 0%; 
             z-index: 1; 
-            transition: width 0.4s ease; 
+            transition: width 0.3s ease; 
         }
         .circle { 
             background-color: #fff; 
@@ -88,17 +86,16 @@
             justify-content: center; 
             z-index: 2; 
             font-weight: 600; 
-            transition: all 0.4s ease; 
             font-size: 0.85rem; 
+            transition: all 0.3s ease;
         }
         .circle.active { 
             border-color: var(--success); 
             color: var(--success); 
-            transform: scale(1.05); 
         }
         
-        /* Step Slides Layout */
-        .form-step { display: none; animation: slideIn 0.35s ease-out; }
+        /* Step Sections visibility toggle */
+        .form-step { display: none; }
         .form-step.active { display: block; }
         
         fieldset { border: none; margin-bottom: 10px; }
@@ -114,7 +111,6 @@
             border-radius: 6px; 
             font-size: 1rem;
             background-color: #f8fafc;
-            transition: all 0.2s ease;
         }
         input:focus, textarea:focus, select:focus {
             background-color: #fff;
@@ -124,7 +120,7 @@
         }
         textarea { resize: vertical; height: 90px; }
         
-        /* Custom Radio Buttons */
+        /* Horizontal Custom Buttons styling */
         .radio-group { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px; }
         .radio-group label { 
             font-weight: 500; 
@@ -135,68 +131,45 @@
             background: #f1f5f9;
             padding: 10px 16px;
             border-radius: 6px;
-            border: 1px solid transparent;
             flex: 1;
             min-width: 100px;
             justify-content: center;
         }
         .radio-group input[type="radio"] { transform: scale(1.1); }
-        .radio-group label:has(input:checked) {
-            background: #e0f2fe;
-            border-color: var(--secondary);
-            color: #0369a1;
-        }
         
-        /* Legal Warning Panels */
+        /* Agreement panels style layout */
         .waiver-box { background: #fff5f5; border-left: 4px solid var(--danger); padding: 18px; margin-bottom: 20px; border-radius: 6px; }
         .checkbox-group { display: flex; align-items: flex-start; gap: 10px; margin-top: 12px; }
         .checkbox-group label { font-weight: 500; font-size: 0.9rem; color: #4a5568; cursor: pointer; display: inline; }
-        .checkbox-group input { margin-top: 3px; transform: scale(1.1); }
         
-        /* Action Controls Layout Base */
+        /* Persistent Action Panel Footer */
         .btn-controls { 
             display: flex; 
             justify-content: space-between; 
+            align-items: center;
             gap: 12px; 
             margin-top: 25px; 
             border-top: 1px solid var(--border); 
             padding-top: 20px; 
         }
         button { 
-            padding: 12px 24px; 
+            padding: 12px 28px; 
             border: none; 
             border-radius: 6px; 
             font-size: 1rem; 
             font-weight: 600; 
             cursor: pointer; 
-            transition: all 0.2s ease; 
         }
         .btn-prev { background-color: #e2e8f0; color: #4a5568; }
-        .btn-prev:hover:not(:disabled) { background-color: #cbd5e1; }
-        .btn-prev:disabled { opacity: 0.5; cursor: not-allowed; }
-        
-        .btn-next { background-color: var(--secondary); color: white; }
-        .btn-next:hover { background-color: #2980b9; }
-        
-        .btn-submit { background-color: var(--success); color: white; display: none; }
-        .btn-submit:hover { background-color: #219653; }
+        .btn-next { background-color: var(--secondary); color: white; margin-left: auto; }
+        .btn-submit { background-color: var(--success); color: white; display: none; margin-left: auto; }
         
         #formStatus { text-align: center; margin-top: 15px; font-weight: 600; font-size: 0.95rem; }
 
-        /* Mobile Adjustments */
         @media (max-width: 480px) {
-            body { padding: 10px; }
-            .form-container { padding: 20px 15px; border-radius: 8px; }
-            h1 { font-size: 1.4rem; }
-            .circle { height: 28px; width: 28px; font-size: 0.75rem; }
-            .radio-group label { flex-basis: 100%; }
             .btn-controls { flex-direction: column-reverse; }
             button { width: 100%; padding: 14px; }
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(15px); }
-            to { opacity: 1; transform: translateX(0); }
+            .btn-next, .btn-submit { margin-left: 0; }
         }
     </style>
 </head>
@@ -218,6 +191,7 @@
 
     <form id="intakeForm">
 
+        <!-- STEP 1: Owner Details -->
         <div class="form-step active">
             <fieldset>
                 <legend>1. Owner Details</legend>
@@ -240,6 +214,7 @@
             </fieldset>
         </div>
 
+        <!-- STEP 2: Dog Information -->
         <div class="form-step">
             <fieldset>
                 <legend>2. Dog Information</legend>
@@ -290,6 +265,7 @@
             </fieldset>
         </div>
 
+        <!-- STEP 3: Behaviour & Socialization -->
         <div class="form-step">
             <fieldset>
                 <legend>3. Behaviour & Temperament</legend>
@@ -316,6 +292,7 @@
             </fieldset>
         </div>
 
+        <!-- STEP 4: House Habits & Triggers -->
         <div class="form-step">
             <fieldset>
                 <legend>4. House Habits & Triggers</legend>
@@ -329,33 +306,35 @@
                 </div>
                 <div class="form-group">
                     <label for="triggers">Triggers or Fears (e.g. storms, loud noises):</label>
-                    <textarea id="triggers" name="triggers" placeholder="Please list any specific anxieties or situational fears..."></textarea>
+                    <textarea id="triggers" name="triggers" placeholder="Please list any specific fears..."></textarea>
                 </div>
             </fieldset>
         </div>
 
+        <!-- STEP 5: Feeding Instructions -->
         <div class="form-step">
             <fieldset>
                 <legend>5. Feeding Instructions</legend>
                 <div class="form-group">
                     <label for="foodBrand">Food Brand / Type</label>
-                    <input type="text" id="foodBrand" name="foodBrand" placeholder="e.g. Kibble / Wet Food">
+                    <input type="text" id="foodBrand" name="foodBrand" placeholder="e.g. Kibble">
                 </div>
                 <div class="form-group">
                     <label for="feedingTimes">Feeding Times</label>
-                    <input type="text" id="feedingTimes" name="feedingTimes" placeholder="e.g. Twice daily at 8 AM and 6 PM">
+                    <input type="text" id="feedingTimes" name="feedingTimes" placeholder="e.g. Twice daily">
                 </div>
                 <div class="form-group">
                     <label for="foodAmount">Food Amount</label>
-                    <input type="text" id="foodAmount" name="foodAmount" placeholder="e.g. 1 cup per meal">
+                    <input type="text" id="foodAmount" name="foodAmount" placeholder="e.g. 1 cup">
                 </div>
                 <div class="form-group">
                     <label for="allergies">Food Allergies / Dietary Restrictions</label>
-                    <textarea id="allergies" name="allergies" placeholder="Write 'None' if not applicable"></textarea>
+                    <textarea id="allergies" name="allergies" placeholder="Write 'None' if applicable"></textarea>
                 </div>
             </fieldset>
         </div>
 
+        <!-- STEP 6: Routines & Medical Care -->
         <div class="form-step">
             <fieldset>
                 <legend>6. Routines & Medical Care</legend>
@@ -365,11 +344,172 @@
                 </div>
                 <div class="form-group">
                     <label for="walkDuration">Typical Walk Duration</label>
-                    <input type="text" id="walkDuration" name="walkDuration" placeholder="e.g. 30 minutes">
+                    <input type="text" id="walkDuration" name="walkDuration" placeholder="e.g. 30 mins">
                 </div>
                 <div class="form-group">
                     <label for="medicalConditions">Medical Conditions or Medications</label>
-                    <textarea id="medicalConditions" name="medicalConditions" placeholder="Dosage instructions and timing details..."></textarea>
+                    <textarea id="medicalConditions" name="medicalConditions" placeholder="Dosages, frequencies etc..."></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="vetClinic">Regular Vet Clinic
+                    <label for="vetClinic">Regular Vet Clinic</label>
+                    <input type="text" id="vetClinic" name="vetClinic">
+                </div>
+                <div class="form-group">
+                    <label for="vetPhone">Vet Phone Number</label>
+                    <input type="tel" id="vetPhone" name="vetPhone">
+                </div>
+            </fieldset>
+        </div>
+
+        <!-- STEP 7: Complete Submission -->
+        <div class="form-step">
+            <fieldset>
+                <legend>7. Complete Submission</legend>
+                <div class="waiver-box">
+                    <strong>Emergency Medical Authorization</strong>
+                    <p style="font-size: 0.88rem; line-height: 1.4; margin: 8px 0; color: #2c3e50;">
+                        In the event that my pet becomes injured or ill while under the care of the dog sitter, I authorize them to secure necessary treatment. While every effort will be made to utilize my preferred vet clinic, if they are too far or unreachable, the dog sitter has immediate responsibility to take my pet to the nearest emergency veterinary facility. I assume full financial responsibility for all costs.
+                    </p>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="waiverAgree" name="waiverAgree" required>
+                        <label for="waiverAgree"><strong>I read and explicitly accept the Medical Care Waiver *</strong></label>
+                    </div>
+                </div>
+
+                <div class="checkbox-group" style="margin-bottom: 20px;">
+                    <input type="checkbox" id="accuracyAgree" name="accuracyAgree" required>
+                    <label for="accuracyAgree">I confirm that all information provided is accurate. *</label>
+                </div>
+                
+                <div class="form-group">
+                    <label for="signature">Owner Electronic Signature (Type Full Name) *</label>
+                    <input type="text" id="signature" name="signature" required>
+                </div>
+            </fieldset>
+        </div>
+
+        <!-- Navigation Buttons Controls -->
+        <div class="btn-controls">
+            <button type="button" class="btn-prev" id="prevBtn">Previous</button>
+            <button type="button" class="btn-next" id="nextBtn">Next</button>
+            <button type="submit" class="btn-submit" id="submitBtn">Submit Intake Form</button>
+        </div>
+
+        <p id="formStatus"></p>
+    </form>
+</div>
+
+<script>
+    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz2xTyv52ycDFRa-h712O6x3mZbo2EhTBbYtGpNtd5-svrEU8AENxbAbQU-gIo8uJbmWw/exec';
+
+    const formSteps = document.querySelectorAll('.form-step');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const circles = document.querySelectorAll('.circle');
+    const progressBar = document.getElementById('progressBar');
+    
+    let currentStep = 0;
+
+    function renderActiveStep() {
+        // Toggle slide display states
+        formSteps.forEach((step, idx) => {
+            step.classList.toggle('active', idx === currentStep);
+        });
+
+        // Toggle progress layout track steps
+        circles.forEach((circle, idx) => {
+            circle.classList.toggle('active', idx <= currentStep);
+        });
+
+        const progressPercentage = (currentStep / (formSteps.length - 1)) * 100;
+        progressBar.style.width = progressPercentage + '%';
+
+        // Manage clean visibility layouts
+        if (currentStep === 0) {
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'block';
+            submitBtn.style.display = 'none';
+        } else if (currentStep === formSteps.length - 1) {
+            prevBtn.style.display = 'block';
+            nextBtn.style.display = 'none';
+            submitBtn.style.display = 'block';
+        } else {
+            prevBtn.style.display = 'block';
+            nextBtn.style.display = 'block';
+            submitBtn.style.display = 'none';
+        }
+    }
+
+    function checkStepValidity() {
+        // Collect current fields inside this active element section
+        const activeFields = formSteps[currentStep].querySelectorAll('input, select, textarea');
+        let isStepValid = true;
+        
+        for (let field of activeFields) {
+            if (!field.checkValidity()) {
+                field.reportValidity();
+                isStepValid = false;
+                break;
+            }
+        }
+        return isStepValid;
+    }
+
+    nextBtn.addEventListener('click', () => {
+        if (checkStepValidity()) {
+            currentStep++;
+            renderActiveStep();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    });
+
+    prevBtn.addEventListener('click', () => {
+        currentStep--;
+        renderActiveStep();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    document.getElementById('intakeForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const statusText = document.getElementById('formStatus');
+        submitBtn.disabled = true;
+        prevBtn.disabled = true;
+        submitBtn.innerText = 'Submitting...';
+        statusText.style.color = '#34495e';
+        statusText.innerText = 'Saving submission securely to Google Drive records...';
+
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+        data.date = new Date().toLocaleDateString();
+
+        fetch(GOOGLE_APP_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(() => {
+            statusText.style.color = 'var(--success)';
+            statusText.innerText = 'Success! Your intake form has been submitted safely.';
+            submitBtn.innerText = 'Submitted!';
+            document.getElementById('intakeForm').reset();
+            currentStep = 0;
+            renderActiveStep();
+        })
+        .catch(error => {
+            console.error('Submission Error:', error);
+            statusText.style.color = 'var(--danger)';
+            statusText.innerText = 'A connectivity error occurred. Please hit retry.';
+            submitBtn.disabled = false;
+            prevBtn.disabled = false;
+            submitBtn.innerText = 'Submit Intake Form';
+        });
+    });
+    
+    // Kickstart initial load profile
+    renderActiveStep();
+</script>
+</body>
+</html>
