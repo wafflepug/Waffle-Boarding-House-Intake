@@ -7,7 +7,19 @@
     <style>
         body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; color: #333; }
         .form-container { max-width: 700px; background: #fff; margin: 0 auto; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: #2c3e50; margin-bottom: 30px; }
+        h1 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
+        
+        /* Progress Bar Styling */
+        .progress-container { display: flex; justify-content: space-between; position: relative; margin-bottom: 30px; }
+        .progress-container::before { content: ''; background-color: #e0e0e0; position: absolute; top: 50%; left: 0; transform: translateY(-50%); height: 4px; width: 100%; z-index: 1; }
+        .progress-bar { background-color: #27ae60; position: absolute; top: 50%; left: 0; transform: translateY(-50%); height: 4px; width: 0%; z-index: 1; transition: width 0.4s ease; }
+        .circle { background-color: #fff; border: 3px solid #e0e0e0; color: #999; border-radius: 50%; height: 30px; width: 30px; display: flex; align-items: center; justify-content: center; z-index: 2; font-weight: bold; transition: all 0.4s ease; font-size: 0.85em; }
+        .circle.active { border-color: #27ae60; color: #27ae60; transform: scale(1.1); }
+        
+        /* Carousel Step Logic */
+        .form-step { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .form-step.active { display: block; }
+        
         fieldset { border: 1px solid #ddd; border-radius: 6px; padding: 20px; margin-bottom: 25px; }
         legend { font-weight: bold; color: #2c3e50; padding: 0 10px; font-size: 1.1em; }
         .form-group { margin-bottom: 15px; }
@@ -19,224 +31,360 @@
         .waiver-box { background: #fff5f5; border-left: 4px solid #e74c3c; padding: 15px; margin-bottom: 20px; border-radius: 4px; }
         .checkbox-group { display: flex; align-items: flex-start; gap: 10px; margin-top: 10px; }
         .checkbox-group label { font-weight: normal; font-size: 0.95em; }
-        button { width: 100%; background-color: #27ae60; color: white; padding: 14px; border: none; border-radius: 4px; font-size: 1.1em; cursor: pointer; transition: background 0.3s; }
-        button:hover { background-color: #219653; }
+        
+        /* Nav Navigation Bar Controls */
+        .btn-controls { display: flex; justify-content: space-between; gap: 15px; margin-top: 20px; }
+        button { flex: 1; padding: 14px; border: none; border-radius: 4px; font-size: 1.1em; cursor: pointer; transition: background 0.3s; }
+        .btn-prev { background-color: #bdc3c7; color: #333; }
+        .btn-prev:hover { background-color: #a6acaf; }
+        .btn-next { background-color: #3498db; color: white; }
+        .btn-next:hover { background-color: #2980b9; }
+        .btn-submit { background-color: #27ae60; color: white; display: none; }
+        .btn-submit:hover { background-color: #219653; }
+        
         #formStatus { text-align: center; margin-top: 15px; font-weight: bold; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
 <div class="form-container">
     <h1>Dog Sitting Intake Form</h1>
+    
+    <!-- Progress Multi-step Tracker -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+        <div class="circle active" data-title="Owner">1</div>
+        <div class="circle" data-title="Dog">2</div>
+        <div class="circle" data-title="Behavior">3</div>
+        <div class="circle" data-title="Feeding">4</div>
+        <div class="circle" data-title="Routine">5</div>
+        <div class="circle" data-title="Legal">6</div>
+    </div>
+
     <form id="intakeForm">
 
-        <fieldset>
-            <legend>1. Owner Details</legend>
-            <div class="form-group">
-                <label for="ownerName">Owner Name *</label>
-                <input type="text" id="ownerName" name="ownerName" required>
-            </div>
-            <div class="form-group">
-                <label for="mobileNumber">Mobile Number *</label>
-                <input type="tel" id="mobileNumber" name="mobileNumber" required>
-            </div>
-            <div class="form-group">
-                <label for="emergencyContact">Emergency Contact Name *</label>
-                <input type="text" id="emergencyContact" name="emergencyContact" required>
-            </div>
-            <div class="form-group">
-                <label for="emergencyPhone">Emergency Phone *</label>
-                <input type="tel" id="emergencyPhone" name="emergencyPhone" required>
-            </div>
-        </fieldset>
-
-        <fieldset>
-            <legend>2. Dog Information</legend>
-            <div class="form-group">
-                <label for="dogName">Dog's Name *</label>
-                <input type="text" id="dogName" name="dogName" required>
-            </div>
-            <div class="form-group">
-                <label for="breed">Breed *</label>
-                <input type="text" id="breed" name="breed" required>
-            </div>
-            <div class="form-group">
-                <label for="age">Age *</label>
-                <input type="text" id="age" name="age" required>
-            </div>
-            <div class="form-group">
-                <label for="weight">Weight (kg) *</label>
-                <input type="text" id="weight" name="weight" required>
-            </div>
-            <div class="form-group">
-                <label>Sex *</label>
-                <div class="radio-group">
-                    <label><input type="radio" name="sex" value="Male" required> Male</label>
-                    <label><input type="radio" name="sex" value="Female"> Female</label>
+        <!-- STEP 1: Owner Details -->
+        <div class="form-step active">
+            <fieldset>
+                <legend>1. Owner Details</legend>
+                <div class="form-group">
+                    <label for="ownerName">Owner Name *</label>
+                    <input type="text" id="ownerName" name="ownerName" required>
                 </div>
-            </div>
-            <div class="form-group">
-                <label>Desexed *</label>
-                <div class="radio-group">
-                    <label><input type="radio" name="desexed" value="Yes" required> Yes</label>
-                    <label><input type="radio" name="desexed" value="No"> No</label>
+                <div class="form-group">
+                    <label for="mobileNumber">Mobile Number *</label>
+                    <input type="tel" id="mobileNumber" name="mobileNumber" required>
                 </div>
-            </div>
-            <div class="form-group">
-                <label>Vaccinated *</label>
-                <div class="radio-group">
-                    <label><input type="radio" name="vaccinated" value="Yes" required> Yes</label>
-                    <label><input type="radio" name="vaccinated" value="No"> No</label>
+                <div class="form-group">
+                    <label for="emergencyContact">Emergency Contact Name *</label>
+                    <input type="text" id="emergencyContact" name="emergencyContact" required>
                 </div>
-            </div>
-            <div class="form-group">
-                <label>Microchipped *</label>
-                <div class="radio-group">
-                    <label><input type="radio" name="microchipped" value="Yes" required> Yes</label>
-                    <label><input type="radio" name="microchipped" value="No"> No</label>
+                <div class="form-group">
+                    <label for="emergencyPhone">Emergency Phone *</label>
+                    <input type="tel" id="emergencyPhone" name="emergencyPhone" required>
                 </div>
-            </div>
-        </fieldset>
-
-        <fieldset>
-            <legend>3. Behaviour & Personality</legend>
-            <div class="form-group">
-                <label>Friendly with other dogs?</label>
-                <div class="radio-group"><label><input type="radio" name="friendlyDogs" value="Yes"> Yes</label><label><input type="radio" name="friendlyDogs" value="No"> No</label></div>
-            </div>
-            <div class="form-group">
-                <label>Friendly with cats?</label>
-                <div class="radio-group"><label><input type="radio" name="friendlyCats" value="Yes"> Yes</label><label><input type="radio" name="friendlyCats" value="No"> No</label></div>
-            </div>
-            <div class="form-group">
-                <label>Friendly with children?</label>
-                <div class="radio-group"><label><input type="radio" name="friendlyChildren" value="Yes"> Yes</label><label><input type="radio" name="friendlyChildren" value="No"> No</label></div>
-            </div>
-            <div class="form-group">
-                <label>Separation anxiety?</label>
-                <div class="radio-group"><label><input type="radio" name="anxiety" value="Yes"> Yes</label><label><input type="radio" name="anxiety" value="No"> No</label></div>
-            </div>
-            <div class="form-group">
-                <label>Any Aggression (including Food)?</label>
-                <div class="radio-group"><label><input type="radio" name="aggression" value="Yes"> Yes</label><label><input type="radio" name="aggression" value="No"> No</label></div>
-            </div>
-            <div class="form-group">
-                <label for="triggers">Triggers or Fears (e.g. storms, loud noises):</label>
-                <textarea id="triggers" name="triggers"></textarea>
-            </div>
-        </fieldset>
-
-        <fieldset>
-            <legend>4. Feeding Instructions</legend>
-            <div class="form-group">
-                <label for="foodBrand">Food Brand/Type</label>
-                <input type="text" id="foodBrand" name="foodBrand">
-            </div>
-            <div class="form-group">
-                <label for="feedingTimes">Feeding Times</label>
-                <input type="text" id="feedingTimes" name="feedingTimes">
-            </div>
-            <div class="form-group">
-                <label for="foodAmount">Food Amount</label>
-                <input type="text" id="foodAmount" name="foodAmount">
-            </div>
-            <div class="form-group">
-                <label for="allergies">Food Allergies / Restrictions</label>
-                <textarea id="allergies" name="allergies"></textarea>
-            </div>
-        </fieldset>
-
-        <fieldset>
-            <legend>5. Walking & Medical Routine</legend>
-            <div class="form-group">
-                <label for="walksPerDay">Walks per Day</label>
-                <input type="number" id="walksPerDay" name="walksPerDay">
-            </div>
-            <div class="form-group">
-                <label for="walkDuration">Walk Duration</label>
-                <input type="text" id="walkDuration" name="walkDuration">
-            </div>
-            <div class="form-group">
-                <label for="medicalConditions">Medical Conditions / Medications</label>
-                <textarea id="medicalConditions" name="medicalConditions"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="vetClinic">Regular Vet Clinic</label>
-                <input type="text" id="vetClinic" name="vetClinic">
-            </div>
-            <div class="form-group">
-                <label for="vetPhone">Vet Phone Number</label>
-                <input type="tel" id="vetPhone" name="vetPhone">
-            </div>
-        </fieldset>
-
-        <div class="waiver-box">
-            <strong>Emergency Medical Authorization</strong>
-            <p style="font-size: 0.9em; line-height: 1.4; margin: 8px 0;">
-                In the event that my pet becomes injured or ill while under the care of the dog sitter, I authorize them to secure necessary treatment. While every effort will be made to utilize my preferred vet clinic, if they are too far or unreachable, the dog sitter has immediate responsibility to take my pet to the nearest emergency veterinary facility. I assume full financial responsibility for all costs.
-            </p>
-            <div class="checkbox-group">
-                <input type="checkbox" id="waiverAgree" name="waiverAgree" required>
-                <label for="waiverAgree"><strong>I have read, understood, and agree to the Emergency Medical Care Waiver *</strong></label>
-            </div>
+            </fieldset>
         </div>
 
-        <fieldset>
-            <legend>Agreement</legend>
-            <div class="checkbox-group">
-                <input type="checkbox" id="accuracyAgree" name="accuracyAgree" required>
-                <label for="accuracyAgree">I confirm that all information provided is accurate. *</label>
-            </div>
-            <div class="form-group" style="margin-top:15px;">
-                <label for="signature">Owner Electronic Signature (Type Name) *</label>
-                <input type="text" id="signature" name="signature" required>
-            </div>
-        </fieldset>
+        <!-- STEP 2: Dog Information -->
+        <div class="form-step">
+            <fieldset>
+                <legend>2. Dog Information</legend>
+                <div class="form-group">
+                    <label for="dogName">Dog's Name *</label>
+                    <input type="text" id="dogName" name="dogName" required>
+                </div>
+                <div class="form-group">
+                    <label for="breed">Breed *</label>
+                    <input type="text" id="breed" name="breed" required>
+                </div>
+                <div class="form-group">
+                    <label for="age">Age *</label>
+                    <input type="text" id="age" name="age" required>
+                </div>
+                <div class="form-group">
+                    <label for="weight">Weight (kg) *</label>
+                    <input type="text" id="weight" name="weight" required>
+                </div>
+                <div class="form-group">
+                    <label>Sex *</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="sex" value="Male" required> Male</label>
+                        <label><input type="radio" name="sex" value="Female"> Female</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Desexed *</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="desexed" value="Yes" required> Yes</label>
+                        <label><input type="radio" name="desexed" value="No"> No</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Vaccinated *</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="vaccinated" value="Yes" required> Yes</label>
+                        <label><input type="radio" name="vaccinated" value="No"> No</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Microchipped *</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="microchipped" value="Yes" required> Yes</label>
+                        <label><input type="radio" name="microchipped" value="No"> No</label>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
 
-        <button type="submit" id="submitBtn">Submit Intake Form</button>
+        <!-- STEP 3: Behaviour & Personality -->
+        <div class="form-step">
+            <fieldset>
+                <legend>3. Behaviour & Personality</legend>
+                <div class="form-group">
+                    <label>Friendly with other dogs?</label>
+                    <div class="radio-group"><label><input type="radio" name="friendlyDogs" value="Yes"> Yes</label><label><input type="radio" name="friendlyDogs" value="No"> No</label></div>
+                </div>
+                <div class="form-group">
+                    <label>Friendly with cats?</label>
+                    <div class="radio-group"><label><input type="radio" name="friendlyCats" value="Yes"> Yes</label><label><input type="radio" name="friendlyCats" value="No"> No</label></div>
+                </div>
+                <div class="form-group">
+                    <label>Friendly with children?</label>
+                    <div class="radio-group"><label><input type="radio" name="friendlyChildren" value="Yes"> Yes</label><label><input type="radio" name="friendlyChildren" value="No"> No</label></div>
+                </div>
+                <div class="form-group">
+                    <label>Separation anxiety?</label>
+                    <div class="radio-group"><label><input type="radio" name="anxiety" value="Yes"> Yes</label><label><input type="radio" name="anxiety" value="No"> No</label></div>
+                </div>
+                <div class="form-group">
+                    <label>Any Aggression (including Food)?</label>
+                    <div class="radio-group"><label><input type="radio" name="aggression" value="Yes"> Yes</label><label><input type="radio" name="aggression" value="No"> No</label></div>
+                </div>
+                <div class="form-group">
+                    <label for="triggers">Triggers or Fears (e.g. storms, loud noises):</label>
+                    <textarea id="triggers" name="triggers"></textarea>
+                </div>
+            </fieldset>
+        </div>
+
+        <!-- STEP 4: Feeding Instructions -->
+        <div class="form-step">
+            <fieldset>
+                <legend>4. Feeding Instructions</legend>
+                <div class="form-group">
+                    <label for="foodBrand">Food Brand/Type</label>
+                    <input type="text" id="foodBrand" name="foodBrand">
+                </div>
+                <div class="form-group">
+                    <label for="feedingTimes">Feeding Times</label>
+                    <input type="text" id="feedingTimes" name="feedingTimes">
+                </div>
+                <div class="form-group">
+                    <label for="foodAmount">Food Amount</label>
+                    <input type="text" id="foodAmount" name="foodAmount">
+                </div>
+                <div class="form-group">
+                    <label for="allergies">Food Allergies / Restrictions</label>
+                    <textarea id="allergies" name="allergies"></textarea>
+                </div>
+            </fieldset>
+        </div>
+
+        <!-- STEP 5: Walking & Medical Routine -->
+        <div class="form-step">
+            <fieldset>
+                <legend>5. Walking & Medical Routine</legend>
+                <div class="form-group">
+                    <label for="walksPerDay">Walks per Day</label>
+                    <input type="number" id="walksPerDay" name="walksPerDay">
+                </div>
+                <div class="form-group">
+                    <label for="walkDuration">Walk Duration</label>
+                    <input type="text" id="walkDuration" name="walkDuration">
+                </div>
+                <div class="form-group">
+                    <label for="medicalConditions">Medical Conditions / Medications</label>
+                    <textarea id="medicalConditions" name="medicalConditions"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="vetClinic">Regular Vet Clinic</label>
+                    <input type="text" id="vetClinic" name="vetClinic">
+                </div>
+                <div class="form-group">
+                    <label for="vetPhone">Vet Phone Number</label>
+                    <input type="tel" id="vetPhone" name="vetPhone">
+                </div>
+            </fieldset>
+        </div>
+
+        <!-- STEP 6: Waivers and Agreements -->
+        <div class="form-step">
+            <div class="waiver-box">
+                <strong>Emergency Medical Authorization</strong>
+                <p style="font-size: 0.9em; line-height: 1.4; margin: 8px 0;">
+                    In the event that my pet becomes injured or ill while under the care of the dog sitter, I authorize them to secure necessary treatment. While every effort will be made to utilize my preferred vet clinic, if they are too far or unreachable, the dog sitter has immediate responsibility to take my pet to the nearest emergency veterinary facility. I assume full financial responsibility for all costs.[cite: 2]
+                </p>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="waiverAgree" name="waiverAgree" required>
+                    <label for="waiverAgree"><strong>I have read, understood, and agree to the Emergency Medical Care Waiver *</strong></label>
+                </div>
+            </div>
+
+            <fieldset>
+                <legend>Agreement</legend>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="accuracyAgree" name="accuracyAgree" required>
+                    <label for="accuracyAgree">I confirm that all information provided is accurate. *</label>
+                </div>
+                <div class="form-group" style="margin-top:15px;">
+                    <label for="signature">Owner Electronic Signature (Type Name) *</label>
+                    <input type="text" id="signature" name="signature" required>
+                </div>
+            </fieldset>
+        </div>
+
+        <!-- Action Panel Buttons -->
+        <div class="btn-controls">
+            <button type="button" class="btn-prev" id="prevBtn" disabled>Previous</button>
+            <button type="button" class="btn-next" id="nextBtn">Next</button>
+            <button type="submit" class="btn-submit" id="submitBtn">Submit Intake Form</button>
+        </div>
+
         <p id="formStatus"></p>
     </form>
 </div>
 
 <script>
-    // Replace this string with your deployed Google Web App URL from Part 2
-    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz2xTyv52ycDFRa-h712O6x3mZbo2EhTBbYtGpNtd5-svrEU8AENxbAbQU-gIo8uJbmWw/exec';
+    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz2xTyv52ycDFRa-h712O6x3mZbo2EhTBbYtGpNtd5-svrEU8AENxbAbQU-gIo8uJbmWw/exec';[cite: 2]
 
-    document.getElementById('intakeForm').addEventListener('submit', function(e) {
-        e.preventDefault();
+    const formSteps = document.querySelectorAll('.form-step');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const circles = document.querySelectorAll('.circle');
+    const progressBar = document.getElementById('progressBar');
+    
+    let currentStep = 0;
+
+    // Carousel Steering Logic
+    function updateFormCarousel() {
+        // Toggle Steps visibility
+        formSteps.forEach((step, idx) => {
+            step.classList.toggle('active', idx === currentStep);
+        });
+
+        // Toggle Indicators Track
+        circles.forEach((circle, idx) => {
+            circle.classList.toggle('active', idx <= currentStep);
+        });
+
+        // Progress Bar Calculation
+        const progressPercentage = (currentStep / (formSteps.length - 1)) * 100;
+        progressBar.style.width = progressPercentage + '%';
+
+        // Interface Button Controller State switches
+        if (currentStep === 0) {
+            prevBtn.disabled = true;
+            nextBtn.style.display = 'block';
+            submitBtn.style.display = 'none';
+        } else if (currentStep === formSteps.length - 1) {
+            prevBtn.disabled = false;
+            nextBtn.style.display = 'none';
+            submitBtn.style.display = 'block';
+        } else {
+            prevBtn.disabled = false;
+            nextBtn.style.display = 'block';
+            submitBtn.style.display = 'none';
+        }
+    }
+
+    // Step Validation Filter
+    function isStepValid() {
+        const currentInputs = formSteps[currentStep].querySelectorAll('input[required], textarea[required]');
+        let valid = true;
         
-        const submitBtn = document.getElementById('submitBtn');
-        const statusText = document.getElementById('formStatus');
+        currentInputs.forEach(input => {
+            if (input.type === 'radio') {
+                const groupName = input.name;
+                const checkedRadio = formSteps[currentStep].querySelector(`input[name="${groupName}"]:checked`);
+                if (!checkedRadio) {
+                    valid = false;
+                    input.reportValidity();
+                }
+            } else if (input.type === 'checkbox') {
+                if (!input.checked) {
+                    valid = false;
+                    input.reportValidity();
+                }
+            } else {
+                if (!input.checkValidity()) {
+                    valid = false;
+                    input.reportValidity();
+                }
+            }
+        });
+        return valid;
+    }
+
+    // Nav Forward
+    nextBtn.addEventListener('click', () => {
+        if (isStepValid()) {
+            currentStep++;
+            updateFormCarousel();
+        }
+    });
+
+    // Nav Backward
+    prevBtn.addEventListener('click', () => {
+        currentStep--;
+        updateFormCarousel();
+    });
+
+    // Final Transmission to Google Docs Handle
+    document.getElementById('intakeForm').addEventListener('submit', function(e) {[cite: 2]
+        e.preventDefault();[cite: 2]
         
-        submitBtn.disabled = true;
-        submitBtn.innerText = 'Submitting...';
-        statusText.style.color = '#333';
-        statusText.innerText = 'Processing your application...';
+        if (!isStepValid()) return;
+        
+        const statusText = document.getElementById('formStatus');[cite: 2]
+        
+        submitBtn.disabled = true;[cite: 2]
+        prevBtn.disabled = true;
+        submitBtn.innerText = 'Submitting...';[cite: 2]
+        statusText.style.color = '#333';[cite: 2]
+        statusText.innerText = 'Processing your application...';[cite: 2]
 
-        // Extract form data
-        const formData = new FormData(this);
-        const data = Object.fromEntries(formData.entries());
-        data.date = new Date().toLocaleDateString();
+        const formData = new FormData(this);[cite: 2]
+        const data = Object.fromEntries(formData.entries());[cite: 2]
+        data.date = new Date().toLocaleDateString();[cite: 2]
 
-        // Send via AJAX POST to Google Apps Script
-        fetch(GOOGLE_APP_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors', // Critical flag for cross-domain Google Script submissions
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+        fetch(GOOGLE_APP_SCRIPT_URL, {[cite: 2]
+            method: 'POST',[cite: 2]
+            mode: 'no-cors',[cite: 2]
+            headers: { 'Content-Type': 'application/json' },[cite: 2]
+            body: JSON.stringify(data)[cite: 2]
         })
         .then(() => {
-            statusText.style.color = '#27ae60';
-            statusText.innerText = 'Success! Your intake form has been submitted safely.';
-            submitBtn.innerText = 'Submitted';
-            document.getElementById('intakeForm').reset();
+            statusText.style.color = '#27ae60';[cite: 2]
+            statusText.innerText = 'Success! Your intake form has been submitted safely.';[cite: 2]
+            submitBtn.innerText = 'Submitted';[cite: 2]
+            document.getElementById('intakeForm').reset();[cite: 2]
+            currentStep = 0;
+            updateFormCarousel();
         })
         .catch(error => {
-            console.error('Error:', error);
-            statusText.style.color = '#e74c3c';
-            statusText.innerText = 'An error occurred. Please try again.';
-            submitBtn.disabled = false;
-            submitBtn.innerText = 'Submit Intake Form';
+            console.error('Error:', error);[cite: 2]
+            statusText.style.color = '#e74c3c';[cite: 2]
+            statusText.innerText = 'An error occurred. Please try again.';[cite: 2]
+            submitBtn.disabled = false;[cite: 2]
+            prevBtn.disabled = false;
+            submitBtn.innerText = 'Submit Intake Form';[cite: 2]
         });
     });
 </script>
